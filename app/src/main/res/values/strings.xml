@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CS496_HW1_YMJY</string>
+    <string name="app_name">CS496_BestEver</string>
 
     <string-array
         name="popup_spinner_array">
