@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="game2_layout_size">88dp</dimen>
+    <dimen name="game2_btn_size">88dp</dimen>
+    <dimen name="game2_prob_size">40dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+
+
+</resources>

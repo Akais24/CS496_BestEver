@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">CS496_HW1_YMJY</string>
+
+    <string-array
+        name="popup_spinner_array">
+        <item>세부정보</item>
+        <item>하하하</item>
+        <item>미구현</item>
+    </string-array>
+</resources>

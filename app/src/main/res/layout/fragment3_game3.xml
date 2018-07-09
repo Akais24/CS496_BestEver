@@ -1,0 +1,108 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:theme="@style/Theme.AppCompat"
+    tools:context=".MainActivity"
+    android:visibility="gone">
+
+    <RelativeLayout
+        android:id="@+id/bottomlinear2"
+        android:layout_width="181dp"
+        android:layout_height="160dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="28dp"
+        android:background="@android:color/transparent">
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="200dp"
+            android:layout_height="150dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/goal"
+            android:scaleType="fitXY"/>
+
+        <TextView
+            android:id="@+id/drop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:text="Drop Here!"
+            android:textColor="@android:color/black"
+            android:textSize="30dp" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/Sucess"
+        android:layout_width="133dp"
+        android:layout_height="55dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="206dp"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/Total"
+        android:layout_width="171dp"
+        android:layout_height="38dp"
+        android:layout_above="@+id/Sucess"
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
+
+    <AbsoluteLayout
+        android:id="@+id/bottomlinear"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/transparent">
+
+        <ImageButton
+            android:id="@+id/one"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="76dp"
+            android:layout_x="140dp"
+            android:layout_y="348dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitXY"
+            android:src="@drawable/soccerball"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+id/ballpos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="0dp"
+            android:layout_y="388dp"
+            android:text="공 위치 리셋" />
+
+        <TextView
+            android:id="@+id/timer"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_x="10dp"
+            android:layout_y="8dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/black"
+            android:textSize="30dp"
+            tools:layout_editor_absoluteX="140dp"
+            tools:layout_editor_absoluteY="11dp" />
+
+    </AbsoluteLayout>
+
+</RelativeLayout>
