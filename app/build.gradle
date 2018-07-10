@@ -31,4 +31,5 @@ dependencies {
     implementation 'jp.wasabeef:glide-transformations:3.3.0'
     implementation 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
     implementation 'com.android.support:cardview-v7:23.0.+'
+    implementation 'com.koushikdutta.ion:ion:2.+'
 }

@@ -24,7 +24,7 @@ public class Fragment1 extends Fragment /*implements View.OnClickListener*/ {
     //@Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment1, container, false);
+        View view = inflater.inflate(R.layout.fragment1_floating_recycler, container, false);
         return view;
     }
 

@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">CS496_BestEver</string>
+    <string name="server2_addr">hahah</string>
+    <string name="server1_addr">52.231.66.36:60722</string>
 
     <string-array
         name="popup_spinner_array">

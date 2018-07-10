@@ -2,8 +2,11 @@ package com.example.q.swipe_tab.Fragment2;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,6 +19,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,10 +31,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.q.swipe_tab.R;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Fragment2_main extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
@@ -56,6 +70,12 @@ public class Fragment2_main extends Fragment implements View.OnClickListener, Sw
     boolean isStorage = false;
 
     File storageDir = new File(Environment.getExternalStorageDirectory() + "/Pictures", "hw1_test");
+
+    String server_url = "http://52.231.66.36:60722/api/image";
+    ProgressDialog mProgressDialog;
+
+    Gson gson = new Gson();
+
 
     public static Fragment2_main newInstance(){
         return new Fragment2_main();
@@ -116,7 +136,7 @@ public class Fragment2_main extends Fragment implements View.OnClickListener, Sw
         cover.setOnClickListener(this);
         fab1.setOnClickListener(this);
         fab2.setOnClickListener(this);
-        fab3    .setOnClickListener(this);
+        fab3.setOnClickListener(this);
 
         int numOfColums = 3;
         rv.setLayoutManager(new GridLayoutManager(getContext(), numOfColums));
@@ -125,6 +145,20 @@ public class Fragment2_main extends Fragment implements View.OnClickListener, Sw
 
         mSwipeRefreshLayout = model.findViewById(R.id.swipe_layout);
         mSwipeRefreshLayout.setOnRefreshListener(this);
+
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setMessage("Communicating");
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+//        mProgressDialog.setIndeterminate(true);
+//        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+//        mProgressDialog.setCancelable(true);
+//
+//        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+//            @Override
+//            public void onCancel(DialogInterface dialog) {
+//                // downloadTask.cancel(true);
+//            }
+//        });
     }
 
     public void onRefresh(){
@@ -160,15 +194,223 @@ public class Fragment2_main extends Fragment implements View.OnClickListener, Sw
                 }
                 break;
             case R.id.fab2:
+                download();
                 anim();
-                Toast.makeText(getContext(), "ETC function is not complete", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "DOWNLOAD Complete", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.fab3:
+                upload();
                 anim();
-                Toast.makeText(getContext(), "WEB function is not complete", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "UPLOAD Complete", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
+
+
+    public void upload(){
+        final String username = "kakaka";
+        String getlistaddr = server_url + "list/" + username;
+
+        Log.d("Ion Connecting to", getlistaddr);
+        final ArrayList<ImageItem> saved = new ArrayList<>();
+
+        Ion.with(getContext())
+                .load("GET", getlistaddr)
+                .asJsonArray()
+                .setCallback(new FutureCallback<JsonArray>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonArray result) {
+                        for (int i = 0; i < result.size(); i++) {
+                            ImageItem newone = gson.fromJson(result.get(i), ImageItem.class);
+                            saved.add(newone);
+                        }
+                        String[] mdata = new File(storageDir.getPath()).list();
+                        final ArrayList<ImageItem> deletion = getdeletion(saved, mdata);
+                        final ArrayList<String> update = getupdate(saved, mdata);
+
+                        int count = deletion.size() + update.size();
+
+                        for(int i=0; i<deletion.size(); i++){
+                            Log.d("3333 Deletion", deletion.get(i).name);
+
+                            JsonObject json = new JsonObject();
+                            json.addProperty("user_name", username);
+                            json.addProperty("name", deletion.get(i).name);
+
+                            final int final_i = i;
+                            Ion.with(getContext())
+                                    .load("DELETE", server_url)
+                                    .setJsonObjectBody(json)
+                                    .asJsonObject()
+                                    .setCallback(new FutureCallback<JsonObject>() {
+                                        @Override
+                                        public void onCompleted(Exception e, JsonObject result) {
+                                            Log.d("3333 Deletion", deletion.get(final_i).name + " deleted");
+                                        }
+                                    });
+                        }
+                        for(int i=0; i<update.size(); i++){
+                            Log.d("3333 Update", update.get(i));
+
+                            File originalFile = new File(storageDir.getPath() + "/" + update.get(i));
+
+                            JsonObject json = new JsonObject();
+                            json.addProperty("user_name", username);
+                            json.addProperty("name", update.get(i));
+                            json.addProperty("m_date", originalFile.lastModified());
+
+                            String encodedBase64 = null;
+                            try {
+                                FileInputStream fileInputStreamReader = new FileInputStream(originalFile);
+                                byte[] bytes = new byte[(int)originalFile.length()];
+                                fileInputStreamReader.read(bytes);
+                                encodedBase64 = Base64.encodeToString(bytes, Base64.DEFAULT);
+                            } catch (FileNotFoundException e1) {
+                                e.printStackTrace();
+                            } catch (IOException e1) {
+                                e.printStackTrace();
+                            }
+                            json.addProperty("data", encodedBase64);
+
+                            final int final_j = i;
+                            Ion.with(getContext())
+                                    .load("PUT", server_url)
+                                    .setJsonObjectBody(json)
+                                    .asJsonObject()
+                                    .setCallback(new FutureCallback<JsonObject>() {
+                                        @Override
+                                        public void onCompleted(Exception e, JsonObject result) {
+                                            Log.d("3333 UPDATE", update.get(final_j) + " updated");
+                                        }
+                                    });
+                        }
+
+                    }
+                });
+    }
+
+    public ArrayList<ImageItem> getdeletion(ArrayList<ImageItem> saved, String[] myimages){
+        ArrayList<ImageItem> deletion = new ArrayList<>();
+        for(int i=0; i<saved.size(); i++){
+            if(contain(myimages, saved.get(i).name) == -1) deletion.add(saved.get(i));
+        }
+        return deletion;
+    }
+
+    public int contain(String[] sample, String target){
+        for(int i=0; i<sample.length; i++){
+            if(sample[i].equals(target)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public ArrayList<String> getupdate(ArrayList<ImageItem> saved, String[] myimages){
+        File f;
+        ArrayList<String> update = new ArrayList<>();
+
+        for(int i=0; i<myimages.length; i++){
+            ImageItem match = getImageList(saved, myimages[i]);
+            if(match == null){
+                update.add(myimages[i]);
+            }else{
+                f = new File(storageDir.getPath() + "/" + myimages[i]);
+                long local_m_time = f.lastModified();
+                if(match.m_date < local_m_time) update.add(myimages[i]);
+            }
+        }
+        return update;
+    }
+
+    public ImageItem getImageList(ArrayList<ImageItem> saved, String name){
+        for(int i=0; i<saved.size(); i++){
+            if(saved.get(i).name.equals(name)) return saved.get(i);
+        }
+        return null;
+    }
+
+    public void download(){
+        final String username = "kakaka";
+        String getlistaddr = server_url + "list/" + username;
+
+        Log.d("Ion Connecting to", getlistaddr);
+        final ArrayList<ImageItem> saved = new ArrayList<>();
+        Ion.with(getContext())
+            .load("GET", getlistaddr)
+            .asJsonArray()
+            .setCallback(new FutureCallback<JsonArray>() {
+                @Override
+                public void onCompleted(Exception e, JsonArray result) {
+                    for (int i = 0; i < result.size(); i++) {
+                        ImageItem newone = gson.fromJson(result.get(i), ImageItem.class);
+                        saved.add(newone);
+                    }
+                    String[] mdata = new File(storageDir.getPath()).list();
+                    final ArrayList<ImageItem> downs = getdownload(saved, mdata);
+
+                    final int[] rest = {downs.size()};
+
+                    for(int i=0; i<downs.size(); i++){
+                        Log.d("3333 DOWNLOAD", downs.get(i).name);
+                        String down_url = server_url + "/" + username + "/" + downs.get(i).name;
+
+                        final int final_k = i;
+                        Ion.with(getContext())
+                                .load("GET", down_url)
+                                .asJsonObject()
+                                .setCallback(new FutureCallback<JsonObject>() {
+                                    @Override
+                                    public void onCompleted(Exception e, JsonObject result) {
+                                        download_image newdown = gson.fromJson(result, download_image.class);
+                                        String file_path = storageDir.getPath() + "/" + downs.get(final_k).name;
+
+                                        final byte[] data = Base64.decode(newdown.data, Base64.DEFAULT);
+                                        Bitmap decodedBitmap = BitmapFactory.decodeByteArray (data, 0, data.length);
+
+                                        File fileCacheItem = new File(file_path);
+                                        OutputStream out = null;
+
+                                        try {
+                                            fileCacheItem.createNewFile();
+                                            out = new FileOutputStream(fileCacheItem);
+                                            decodedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                                            out.close();
+                                        }catch (Exception e3) {
+                                            e.printStackTrace();
+                                        }
+
+                                        rest[0] = rest[0] - 1;
+                                        if(rest[0] == 0){
+                                            Log.d("33333", "Download finished");
+                                            onResume();
+                                        }
+
+                                    }
+                                });
+                    }
+                }
+            });
+    }
+
+    public ArrayList<ImageItem> getdownload(ArrayList<ImageItem> saved, String[] myimages){
+        File f;
+        ArrayList<ImageItem> downs = new ArrayList<>();
+        for(int i=0; i<saved.size(); i++){
+            int index = contain(myimages, saved.get(i).name);
+
+            if(index == -1) downs.add(saved.get(i));
+            else{
+                f = new File(storageDir.getPath() + "/" + myimages[index]);
+                long local_m_time = f.lastModified();
+
+                ImageItem match = saved.get(i);
+                if(match.m_date > local_m_time) downs.add(match);
+            }
+        }
+        return downs;
+    }
+
 
     public void anim() {
         if (isFabOpen) {
@@ -177,9 +419,9 @@ public class Fragment2_main extends Fragment implements View.OnClickListener, Sw
             fab1_ex.startAnimation(fab_close);
             fab2_ex.startAnimation(fab_close);;
             fab3_ex.startAnimation(fab_close);
-            fab1_ex.setClickable(false);
-            fab2_ex.setClickable(false);
-            fab3_ex.setClickable(false);
+            fab1.setClickable(false);
+            fab2.setClickable(false);
+            fab3.setClickable(false);
             cover.setVisibility(View.INVISIBLE);
             isFabOpen = false;
         } else {
@@ -188,9 +430,9 @@ public class Fragment2_main extends Fragment implements View.OnClickListener, Sw
             fab1_ex.startAnimation(fab_open);
             fab2_ex.startAnimation(fab_open);
             fab3_ex.startAnimation(fab_open);
-            fab1_ex.setClickable(true);
-            fab2_ex.setClickable(true);
-            fab3_ex.setClickable(true);
+            fab1.setClickable(true);
+            fab2.setClickable(true);
+            fab3.setClickable(true);
             cover.setVisibility(View.VISIBLE);
             isFabOpen = true;
         }

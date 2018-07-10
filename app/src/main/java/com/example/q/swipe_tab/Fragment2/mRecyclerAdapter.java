@@ -100,7 +100,8 @@ public class mRecyclerAdapter extends RecyclerView.Adapter<mRecyclerAdapter.View
                                 File f1 = new File(mBasePath + "/" + mdata[position]);
                                 if(f1.delete()){
                                     mdata = file.list();
-                                    notifyItemRemoved(position);
+//                                    notifyItemRemoved(position);
+                                    notifyDataSetChanged();
                                     Toast.makeText(mContext, "사진이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
                                 }else{
                                     Toast.makeText(mContext, "사진 삭제에 실패했습니다. 사진 파일이 있는지 확인해주십시오.", Toast.LENGTH_SHORT).show();
