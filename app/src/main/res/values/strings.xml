@@ -1,10 +1,12 @@
 <resources>
     <string name="app_name">CS496_BestEver</string>
-    <string name="server2_addr">hahah</string>
-    <string name="server1_addr">52.231.66.36:60722</string>
 
-    <string-array
-        name="popup_spinner_array">
+    <string name="facebook_app_id">522748857889914</string>
+    <string name="fb_login_protocol_scheme">fb522748857889914</string>
+
+    <string name="SP_id">local_inform</string>
+
+    <string-array name="popup_spinner_array">
         <item>세부정보</item>
         <item>하하하</item>
         <item>미구현</item>

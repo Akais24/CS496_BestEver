@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -150,17 +151,6 @@ public class Fragment2_main extends Fragment implements View.OnClickListener, Sw
         mProgressDialog.setMessage("Communicating");
         mProgressDialog.setMessage("Communicating");
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-
-//        mProgressDialog.setIndeterminate(true);
-//        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-//        mProgressDialog.setCancelable(true);
-//
-//        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-//            @Override
-//            public void onCancel(DialogInterface dialog) {
-//                // downloadTask.cancel(true);
-//            }
-//        });
     }
 
     public void onRefresh(){
@@ -210,7 +200,8 @@ public class Fragment2_main extends Fragment implements View.OnClickListener, Sw
 
 
     public void upload(){
-        final String username = "kakaka";
+        SharedPreferences test = getActivity().getSharedPreferences("local", getActivity().MODE_PRIVATE);
+        final String username = test.getString("alias", "noname");
         String getlistaddr = server_url + "list/" + username;
 
         Log.d("Ion Connecting to", getlistaddr);
@@ -353,7 +344,9 @@ public class Fragment2_main extends Fragment implements View.OnClickListener, Sw
     }
 
     public void download(){
-        final String username = "kakaka";
+        SharedPreferences test = getActivity().getSharedPreferences("local", getActivity().MODE_PRIVATE);
+        final String username = test.getString("alias", "noname");
+
         String getlistaddr = server_url + "list/" + username;
 
         Log.d("Ion Connecting to", getlistaddr);

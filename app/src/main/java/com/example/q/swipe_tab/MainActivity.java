@@ -1,30 +1,43 @@
 package com.example.q.swipe_tab;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.example.q.swipe_tab.Fragment1.Fragment1;
 import com.example.q.swipe_tab.Fragment2.Fragment2_main;
 import com.example.q.swipe_tab.Fragment3.Fragment3_main;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSION = 1111;
@@ -34,14 +47,20 @@ public class MainActivity extends AppCompatActivity {
     private FragmentManager fm;
     private ArrayList<Fragment> fList;
 
+    TabLayout tabs;
+
     private long backKeyPressedTime = 0;
     private Toast toast;
 
     private String[] permissions;
 
+    public static Activity main_activity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        main_activity = MainActivity.this;
 
         permissions = new String[3];
         permissions[0] = Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -53,63 +72,55 @@ public class MainActivity extends AppCompatActivity {
 
         // Define the viewpager to swipe
         mViewPager = findViewById(R.id.pager);
-
         fm = getSupportFragmentManager();
+
+        android.support.v7.widget.Toolbar toolbar = findViewById(R.id.main_toolbar);
+        setSupportActionBar(toolbar);
 
         bar = getSupportActionBar();
         bar.setDisplayShowTitleEnabled(true);
-        bar.setTitle("Assignment 1");
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        bar.setTitle("CS496_BestEver");
 
-        ActionBar.Tab tab1 = bar.newTab().setText("Tab1").setTabListener(tabListener);
-        ActionBar.Tab tab2 = bar.newTab().setText("Gallery").setTabListener(tabListener);
-        ActionBar.Tab tab3 = bar.newTab().setText("Games").setTabListener(tabListener);
-
-        bar.addTab(tab1);
-        bar.addTab(tab2);
-        bar.addTab(tab3);
+        tabs = findViewById(R.id.tabs);
+        tabs.addTab(tabs.newTab().setText("Contact"));
+        tabs.addTab(tabs.newTab().setText("Gallery"));
+        tabs.addTab(tabs.newTab().setText("C TAB"));
+        tabs.setupWithViewPager(mViewPager);
 
         fList = new ArrayList<Fragment>();
         fList.add(Fragment1.newInstance());
         fList.add(Fragment2_main.newInstance());
         fList.add(Fragment3_main.newInstance());
 
-        mViewPager.setOnPageChangeListener(viewPageListener);
-
         CustomFragmentPagerAdapter adapter = new CustomFragmentPagerAdapter(fm, fList);
         mViewPager.setAdapter(adapter);
+
+        tabs.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int position = tab.getPosition();
+                mViewPager.setCurrentItem(position);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
     }
-
-    ViewPager.SimpleOnPageChangeListener viewPageListener = new ViewPager.SimpleOnPageChangeListener() {
-        @Override
-        public void onPageSelected(int position) {
-            super.onPageSelected(position);
-
-            bar.setSelectedNavigationItem(position);
-        }
-    };
-
-    ActionBar.TabListener tabListener = new ActionBar.TabListener() {
-        @Override
-        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-            mViewPager.setCurrentItem(tab.getPosition());
-        }
-
-        @Override
-        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-        }
-
-        @Override
-        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-        }
-    };
 
     private void checkPermission() {
         if (checkselfpermission(permissions)) {
@@ -195,6 +206,16 @@ public class MainActivity extends AppCompatActivity {
     public void showGuide() {
         toast = Toast.makeText(getApplicationContext(), "한번 더 누르시면 종료됩니다.", Toast.LENGTH_SHORT);
         toast.show();
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_detail:
+                Intent profile = new Intent(MainActivity.this, MyProfileActivity.class);
+                startActivity(profile);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

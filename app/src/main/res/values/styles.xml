@@ -16,6 +16,13 @@
         <item name="colorControlNormal">#000000</item>
     </style>
 
+    <style name="Main_Popup" parent="@android:style/Widget.PopupMenu">
+        <item name="android:textColor">#000000</item>
+        <item name="android:textColorPrimary">#ffffff</item>
+        <item name="android:colorForeground">#ffffff</item>
+        <item name="colorControlNormal">#ffffff</item>
+    </style>
+
     <style name="NoTitle01" parent="Theme.AppCompat.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
