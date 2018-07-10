@@ -148,7 +148,9 @@ public class Fragment2_main extends Fragment implements View.OnClickListener, Sw
 
         mProgressDialog = new ProgressDialog(getActivity());
         mProgressDialog.setMessage("Communicating");
+        mProgressDialog.setMessage("Communicating");
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+
 //        mProgressDialog.setIndeterminate(true);
 //        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 //        mProgressDialog.setCancelable(true);
@@ -214,6 +216,8 @@ public class Fragment2_main extends Fragment implements View.OnClickListener, Sw
         Log.d("Ion Connecting to", getlistaddr);
         final ArrayList<ImageItem> saved = new ArrayList<>();
 
+        mProgressDialog.setMessage("업로드 중입니다");
+        mProgressDialog.show();
         Ion.with(getContext())
                 .load("GET", getlistaddr)
                 .asJsonArray()
@@ -228,7 +232,13 @@ public class Fragment2_main extends Fragment implements View.OnClickListener, Sw
                         final ArrayList<ImageItem> deletion = getdeletion(saved, mdata);
                         final ArrayList<String> update = getupdate(saved, mdata);
 
-                        int count = deletion.size() + update.size();
+                        final int origin = deletion.size() + update.size();
+                        final int[] count = {0};
+
+                        if(origin == 0){
+                            mProgressDialog.hide();
+                            return;
+                        }
 
                         for(int i=0; i<deletion.size(); i++){
                             Log.d("3333 Deletion", deletion.get(i).name);
@@ -246,6 +256,12 @@ public class Fragment2_main extends Fragment implements View.OnClickListener, Sw
                                         @Override
                                         public void onCompleted(Exception e, JsonObject result) {
                                             Log.d("3333 Deletion", deletion.get(final_i).name + " deleted");
+                                            count[0]++;
+                                            if(count[0] == origin){
+                                                mProgressDialog.hide();
+                                                onResume();
+                                            }
+                                            else mProgressDialog.setProgress(100 * count[0] / origin);
                                         }
                                     });
                         }
@@ -281,6 +297,12 @@ public class Fragment2_main extends Fragment implements View.OnClickListener, Sw
                                         @Override
                                         public void onCompleted(Exception e, JsonObject result) {
                                             Log.d("3333 UPDATE", update.get(final_j) + " updated");
+                                            count[0]++;
+                                            if(count[0] == origin){
+                                                mProgressDialog.hide();
+                                                onResume();
+                                            }
+                                            else mProgressDialog.setProgress(100 * count[0] / origin);
                                         }
                                     });
                         }
@@ -335,6 +357,8 @@ public class Fragment2_main extends Fragment implements View.OnClickListener, Sw
         String getlistaddr = server_url + "list/" + username;
 
         Log.d("Ion Connecting to", getlistaddr);
+        mProgressDialog.setMessage("다운로드 중입니다");
+        mProgressDialog.show();
         final ArrayList<ImageItem> saved = new ArrayList<>();
         Ion.with(getContext())
             .load("GET", getlistaddr)
@@ -349,7 +373,13 @@ public class Fragment2_main extends Fragment implements View.OnClickListener, Sw
                     String[] mdata = new File(storageDir.getPath()).list();
                     final ArrayList<ImageItem> downs = getdownload(saved, mdata);
 
-                    final int[] rest = {downs.size()};
+                    final int origin = downs.size();
+                    final int[] rest = {0};
+
+                    if(origin == 0){
+                        mProgressDialog.hide();
+                        return;
+                    }
 
                     for(int i=0; i<downs.size(); i++){
                         Log.d("3333 DOWNLOAD", downs.get(i).name);
@@ -380,11 +410,13 @@ public class Fragment2_main extends Fragment implements View.OnClickListener, Sw
                                             e.printStackTrace();
                                         }
 
-                                        rest[0] = rest[0] - 1;
-                                        if(rest[0] == 0){
-                                            Log.d("33333", "Download finished");
+
+                                        rest[0]++;
+                                        if(rest[0] == origin){
                                             onResume();
+                                            mProgressDialog.hide();
                                         }
+                                        else mProgressDialog.setProgress(100 * rest[0] / origin);
 
                                     }
                                 });
