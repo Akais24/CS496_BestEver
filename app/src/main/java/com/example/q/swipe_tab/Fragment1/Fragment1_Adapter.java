@@ -60,4 +60,10 @@ public class Fragment1_Adapter extends BaseAdapter {
     {
         return con2.size();
     }
+
+    public void updateResults(ArrayList<JSONObject> results) {
+        con2 = results;
+        //Triggers the list update
+        notifyDataSetChanged();
+    }
 }

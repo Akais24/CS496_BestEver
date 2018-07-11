@@ -14,4 +14,6 @@
     <dimen name="profile_image_size">150dp</dimen>
     <dimen name="profile_btn">40dp</dimen>
 
+    <dimen name="contact_card_elev">5dp</dimen>
+
 </resources>

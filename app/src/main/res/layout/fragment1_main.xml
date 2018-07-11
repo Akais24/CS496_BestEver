@@ -6,70 +6,90 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:card_view="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/CardView1"
+    <FrameLayout android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/tools">
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="145dp"
-            android:layout_centerInParent="true"
-            android:layout_margin="5dp"
-            android:layout_marginStart="16dp"
-            android:orientation="vertical"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toTopOf="@+id/CardView2"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            card_view:cardCornerRadius="10dp"
-            card_view:cardElevation="10dp">
-
-            <TextView
-                android:id="@+id/Individual_Contact"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="20dp"
+            android:layout_marginHorizontal="10dp">
+            <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/CardView1"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:background="#FFFFFF"
-                android:gravity="center"
-                android:textSize="30sp"
-                android:textStyle="bold"
+                android:layout_height="120dp"
+                android:layout_alignParentTop="true"
+                android:layout_margin="5dp"
+                android:orientation="vertical"
                 android:visibility="invisible"
-                app:fontFamily="monospace" />
+                card_view:cardCornerRadius="10dp"
+                card_view:cardElevation="@dimen/contact_card_elev">
+                <TextView
+                    android:id="@+id/Individual_Contact"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:background="#FFFFFF"
+                    android:gravity="center"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:visibility="invisible"
+                    app:fontFamily="monospace" />
+            </android.support.v7.widget.CardView>
 
-        </android.support.v7.widget.CardView>
-
-
-        <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:card_view="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/CardView3"
-            android:layout_width="match_parent"
-            android:layout_height="145dp"
-            android:layout_centerInParent="true"
-            android:layout_margin="5dp"
-            android:orientation="vertical"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            card_view:cardCornerRadius="10dp"
-            card_view:cardElevation="10dp">
-
-            <TextView
-                android:id="@+id/Individual_Contact3"
+            <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/CardView2"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:background="#FFFFFF"
-                android:gravity="center"
-                android:textSize="30sp"
-                android:textStyle="bold"
+                android:layout_height="120dp"
+                android:layout_centerInParent="true"
+                android:layout_margin="5dp"
+                android:orientation="vertical"
                 android:visibility="invisible"
-                app:fontFamily="monospace" />
+                card_view:cardCornerRadius="10dp"
+                card_view:cardElevation="@dimen/contact_card_elev">
+                <TextView
+                    android:id="@+id/Individual_Contact3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:background="#FFFFFF"
+                    android:gravity="center"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:visibility="invisible"
+                    app:fontFamily="monospace" />
+            </android.support.v7.widget.CardView>
 
-        </android.support.v7.widget.CardView>
+            <android.support.v7.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/CardView3"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_alignParentBottom="true"
+                android:layout_margin="5dp"
+                android:orientation="vertical"
+                android:visibility="invisible"
+                card_view:cardCornerRadius="10dp"
+                card_view:cardElevation="@dimen/contact_card_elev">
 
+                <TextView
+                    android:id="@+id/Individual_Contact2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:background="#FFFFFF"
+                    android:gravity="center"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:visibility="invisible"
+                    app:fontFamily="monospace" />
+
+            </android.support.v7.widget.CardView>
+        </RelativeLayout>
         <ListView
             android:id="@+id/lstNames"
             android:layout_width="match_parent"
@@ -82,37 +102,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/CardView2"
-            android:layout_width="match_parent"
-            android:layout_height="145dp"
-            android:layout_centerInParent="true"
-            android:layout_margin="5dp"
-            android:layout_marginStart="16dp"
-            android:orientation="vertical"
-            android:visibility="invisible"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="10dp"
-            app:layout_constraintBottom_toTopOf="@+id/CardView3"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/CardView1">
-
-            <TextView
-                android:id="@+id/Individual_Contact2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:background="#FFFFFF"
-                android:gravity="center"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                android:visibility="invisible"
-                app:fontFamily="monospace" />
-
-        </android.support.v7.widget.CardView>
-
-    </RelativeLayout>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/cover"
@@ -202,7 +192,7 @@
         <TextView
             android:layout_width="@dimen/fab_text_width"
             android:layout_height="wrap_content"
-            android:text="CAMERA"
+            android:text="ADD"
             android:textSize="@dimen/fab_text_size"
             android:gravity="right"
             android:textColor="#FFFFFF"

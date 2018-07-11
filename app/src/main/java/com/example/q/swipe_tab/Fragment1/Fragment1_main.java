@@ -1,8 +1,10 @@
 package com.example.q.swipe_tab.Fragment1;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -13,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,13 +31,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.q.swipe_tab.R;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class Fragment1_main extends Fragment implements View.OnClickListener /*implements View.OnClickListener*/ {
+public class Fragment1_main extends Fragment implements View.OnClickListener {
 
     private ListView lstNames;
     private TextView Individual_Contact;
@@ -56,6 +64,11 @@ public class Fragment1_main extends Fragment implements View.OnClickListener /*i
     private FloatingActionButton fab, fab_x, fab1, fab2, fab3;
     private LinearLayout fab1_ex, fab2_ex, fab3_ex;
     TextView cover;
+
+    String server_url = "http://52.231.66.36:60722/api/contacts/";
+    ProgressDialog mProgressDialog;
+
+    Gson gson = new Gson();
 
     public static Fragment1_main newInstance(){
         Fragment1_main fragment = new Fragment1_main();
@@ -183,9 +196,10 @@ public class Fragment1_main extends Fragment implements View.OnClickListener /*i
 
             }
         });
-
-// Read and show the contacts
         showContacts();
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setMessage("Communicating");
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
     }
 
     public void showContacts() {
@@ -202,8 +216,7 @@ public class Fragment1_main extends Fragment implements View.OnClickListener /*i
 
     }
 
-    public ArrayList<JSONObject> mySort(ArrayList<JSONObject> myList)
-    {
+    public ArrayList<JSONObject> mySort(ArrayList<JSONObject> myList) {
         ArrayList<JSONObject> sortedList = new ArrayList<JSONObject>();
         int sz0 = myList.size();
         int sz = 0;
@@ -227,8 +240,7 @@ public class Fragment1_main extends Fragment implements View.OnClickListener /*i
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                           int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission is granted
@@ -250,7 +262,6 @@ public class Fragment1_main extends Fragment implements View.OnClickListener /*i
         ContentResolver cr = getActivity().getContentResolver();
         // Get the Cursor of all the contacts
         Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
-
         // Move the cursor to first. Also check whether the cursor is empty or not.
         try {
             if (cursor.moveToFirst()) {
@@ -310,14 +321,121 @@ public class Fragment1_main extends Fragment implements View.OnClickListener /*i
                 anim();
                 break;
             case R.id.fab2:
+                //download
+                downoad_contact();
                 anim();
                 //Toast.makeText(getContext(), "DOWNLOAD Complete", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.fab3:
+                //upload
                 anim();
+                upload_contacts();
                 //Toast.makeText(getContext(), "UPLOAD Complete", Toast.LENGTH_SHORT).show();
                 break;
         }
+    }
+
+    public void downoad_contact(){
+        mProgressDialog.show();
+        SharedPreferences test = getActivity().getSharedPreferences("local", getActivity().MODE_PRIVATE);
+        final String username = test.getString("alias", "noname");
+
+        if(username.equals("noname")){
+            return;
+        }
+
+        String contacts_url = server_url + username;
+        Ion.with(getContext())
+                .load("GET", contacts_url)
+                .asJsonArray()
+                .setCallback(new FutureCallback<JsonArray>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonArray result) {
+                        ArrayList<contact_item> saved = new ArrayList<>();
+                        for (int i = 0; i < result.size(); i++) {
+                            contact_item target = gson.fromJson(result.get(i), contact_item.class);
+                            saved.add(target);
+
+                            JSONObject tmp2json = new JSONObject();
+                            try {
+                                tmp2json.put("name", target.name);
+                                tmp2json.put("number", target.number);
+                                tmp2json.put("email", target.email);
+                                if(!checkexist(myJSONs, tmp2json)) myJSONs.add(tmp2json);
+                                mProgressDialog.setProgress(100 * i / result.size());
+                            } catch (JSONException e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+                        adapter.updateResults(mySort(myJSONs));
+                        mProgressDialog.hide();
+                    }
+                });
+    }
+
+    public boolean checkexist(ArrayList<JSONObject> jsons, JSONObject tmp){
+        for(int i =0; i<jsons.size(); i++) {
+            JSONObject target = jsons.get(i);
+            Boolean a = false;
+            Boolean b = false;
+            Boolean c = false;
+            try {
+                a = target.get("name").equals(tmp.get("name"));
+                b = target.get("number").equals(tmp.get("number"));
+                c = target.get("email").equals(tmp.get("email"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if(a && b && c){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void upload_contacts(){
+        mProgressDialog.show();
+        SharedPreferences test = getActivity().getSharedPreferences("local", getActivity().MODE_PRIVATE);
+        final String username = test.getString("alias", "noname");
+
+        if(username.equals("noname")){
+            return;
+        }
+        JsonArray send = new JsonArray();
+        ArrayList<JsonObject> send_object = new ArrayList<>();
+        for(int i=0; i<myJSONs.size(); i++){
+            JsonObject newone = new JsonObject();
+            try {
+                newone.addProperty("name", (String) myJSONs.get(i).get("name"));
+                newone.addProperty("number", (String) myJSONs.get(i).get("number"));
+                newone.addProperty("email", (String) myJSONs.get(i).get("email"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            send.add(newone);
+            send_object.add(newone);
+        }
+
+        JsonObject target= new JsonObject();
+        target.addProperty("contacts", String.valueOf(myJSONs));
+
+        String contacts_url = server_url + username;
+        Ion.with(getContext())
+                .load("PUT", contacts_url)
+                .setJsonObjectBody(target)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        mProgressDialog.hide();
+                    }
+                });
+    }
+
+    class contact_item{
+        String name;
+        String number;
+        String email;
     }
 
     public void anim() {
