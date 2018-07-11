@@ -7,12 +7,12 @@
 
     <TextView
         android:id="@+id/tvpoints"
-        android:layout_width="match_parent"
+        android:layout_width="281dp"
         android:layout_height="60dp"
+        android:layout_alignParentTop="true"
         android:layout_gravity="center_vertical"
         android:gravity="center"
-        android:textSize="32sp"
-        android:layout_alignParentTop="true"/>
+        android:textSize="32sp" />
 
 
     <Button
@@ -32,9 +32,17 @@
         android:layout_below="@id/tvpoints"
         android:layout_above="@id/reset_btn"
         android:layout_gravity="center_vertical"
-        android:background="@drawable/man_dancing"
+        android:background="@drawable/cookie"
         android:onClick="onClick" />
 
+    <Button
+        android:id="@+id/ranking"
+        android:layout_width="101dp"
+        android:layout_height="62dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:text="랭킹"
+        android:textSize="20dp"/>
 
 
 </RelativeLayout>

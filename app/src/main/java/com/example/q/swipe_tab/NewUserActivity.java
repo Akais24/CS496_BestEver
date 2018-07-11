@@ -1,7 +1,9 @@
 package com.example.q.swipe_tab;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,7 +41,7 @@ public class NewUserActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String alias = String.valueOf(edittext.getText());
+                final String alias = String.valueOf(edittext.getText());
                 Log.d("ALIAS ", alias);
 
                 final String user_url = server_url + "user/" + alias;
@@ -51,7 +53,7 @@ public class NewUserActivity extends AppCompatActivity {
                         .setCallback(new FutureCallback<JsonObject>() {
                             @Override
                             public void onCompleted(Exception e, JsonObject result) {
-                                response_message newone = gson.fromJson(result, response_message.class);
+                                final response_message newone = gson.fromJson(result, response_message.class);
                                 if(newone.result.equals("Failure")){
                                     JsonObject json = new JsonObject();
                                     json.addProperty("fbid", unique_id);
@@ -71,6 +73,11 @@ public class NewUserActivity extends AppCompatActivity {
                                                         mProgressDialog.hide();
                                                         LoginActivity loginActivity = (LoginActivity) LoginActivity.loginactivity;
                                                         loginActivity.finish();
+
+                                                        SharedPreferences pref = getSharedPreferences("local", Activity.MODE_PRIVATE);
+                                                        SharedPreferences.Editor editor = pref.edit();
+                                                        editor.putString("alias", alias);
+                                                        editor.commit();
 
                                                         Intent main = new Intent(NewUserActivity.this, MainActivity.class);
                                                         startActivity(main);

@@ -149,7 +149,6 @@ public class Fragment2_main extends Fragment implements View.OnClickListener, Sw
 
         mProgressDialog = new ProgressDialog(getActivity());
         mProgressDialog.setMessage("Communicating");
-        mProgressDialog.setMessage("Communicating");
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
     }
 

@@ -11,4 +11,7 @@
     <dimen name="fab_margin_left">8dp</dimen>
     <dimen name="fab_margin_right">6dp</dimen>
 
+    <dimen name="profile_image_size">150dp</dimen>
+    <dimen name="profile_btn">40dp</dimen>
+
 </resources>

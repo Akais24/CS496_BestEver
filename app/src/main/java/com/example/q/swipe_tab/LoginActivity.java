@@ -6,7 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -31,6 +34,8 @@ import java.util.Arrays;
 public class LoginActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
 
+    CardView custom;
+
     String server_url = "http://52.231.66.36:60722/api/";
     ProgressDialog mProgressDialog;
 
@@ -53,13 +58,19 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         loginactivity = LoginActivity.this;
 
-        callbackManager = CallbackManager.Factory.create();
-
+        custom = findViewById(R.id.custom_btn);
         mProgressDialog = new ProgressDialog(this);
 
-        LoginButton loginButton = findViewById(R.id.login_button);
-        loginButton.setReadPermissions(Arrays.asList("public_profile", "email"));
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        custom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LoginManager.getInstance().logInWithReadPermissions(loginactivity, Arrays.asList("public_profile", "email"));
+            }
+        });
+
+        callbackManager = CallbackManager.Factory.create();
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 GraphRequest graphRequest
@@ -92,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
                                         .setCallback(new FutureCallback<JsonObject>() {
                                             @Override
                                             public void onCompleted(Exception e, JsonObject result) {
-                                                response_message newone = gson.fromJson(result, response_message.class);
+                                                response_extend newone = gson.fromJson(result, response_extend.class);
                                                 if(newone.result.equals("Failure")){
                                                     Log.d("hahaha", "no user");
                                                     Intent newuser = new Intent(LoginActivity.this, NewUserActivity.class);
@@ -107,7 +118,11 @@ public class LoginActivity extends AppCompatActivity {
 
                                                     SharedPreferences pref = getSharedPreferences("local", Activity.MODE_PRIVATE);
                                                     SharedPreferences.Editor editor = pref.edit();
-                                                    editor.putString("alias", newone.content);
+                                                    editor.putString("alias", newone.alias);
+                                                    editor.putInt("point", newone.point);
+                                                    Boolean isprofile = false;
+                                                    if(newone.profile == 1) isprofile = true;
+                                                    editor.putBoolean("profile", isprofile);
                                                     editor.commit();
 
                                                     Intent main = new Intent(LoginActivity.this, MainActivity.class);
