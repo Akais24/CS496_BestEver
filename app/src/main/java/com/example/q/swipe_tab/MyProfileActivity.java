@@ -32,6 +32,7 @@ public class MyProfileActivity extends AppCompatActivity {
 
                 SharedPreferences.Editor editor = test.edit();
                 editor.remove("alias");
+                editor.commit();
 
                 LoginManager.getInstance().logOut();
 

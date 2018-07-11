@@ -1,8 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/tvpoints"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="center_vertical"
+        android:text="000000"
+        android:gravity="center"
+        android:textSize="32sp"
+        android:paddingTop="20dp" />
+
+
+    <ImageView
+        android:id="@+id/imgCookie"
+        android:layout_width="372dp"
+        android:layout_height="400dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/cookie"
+        android:onClick="onClick" />
+
+</LinearLayout>
